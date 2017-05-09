@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 import org.sonatype.nexus.repository.Format;
 
 /**
- * R repository format.
+ * CPAN repository format.
  *
  * @since 3.4
  */
