@@ -30,6 +30,7 @@ import org.sonatype.nexus.repository.storage.UnitOfWorkHandler
 import org.sonatype.nexus.repository.types.ProxyType
 import org.sonatype.nexus.repository.Type
 import org.sonatype.nexus.repository.view.ConfigurableViewFacet
+import org.sonatype.nexus.repository.view.Context
 import org.sonatype.nexus.repository.view.Route
 import org.sonatype.nexus.repository.view.Router
 import org.sonatype.nexus.repository.view.ViewFacet
@@ -39,12 +40,18 @@ import org.sonatype.nexus.repository.view.handlers.ContentHeadersHandler
 import org.sonatype.nexus.repository.view.handlers.ExceptionHandler
 import org.sonatype.nexus.repository.view.handlers.HandlerContributor
 import org.sonatype.nexus.repository.view.handlers.TimingHandler
+import org.sonatype.nexus.repository.view.matchers.ActionMatcher
+import org.sonatype.nexus.repository.view.matchers.logic.LogicMatchers
+import org.sonatype.nexus.repository.view.matchers.token.TokenMatcher
 
 import javax.annotation.Nonnull
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
 import javax.inject.Singleton
+
+import static org.sonatype.nexus.repository.http.HttpMethods.GET
+import static org.sonatype.nexus.repository.http.HttpMethods.HEAD
 
 
 /**
@@ -57,6 +64,35 @@ class CpanProxyRecipe
 {
     public static final String NAME = 'cpan-proxy'
 
+    @Inject
+    ExceptionHandler exceptionHandler
+
+    @Inject
+    TimingHandler timingHandler
+
+    @Inject
+    SecurityHandler securityHandler
+
+    @Inject
+    PartialFetchHandler partialFetchHandler
+
+    @Inject
+    ConditionalRequestHandler conditionalRequestHandler
+
+    @Inject
+    ContentHeadersHandler contentHeadersHandler
+
+    @Inject
+    UnitOfWorkHandler unitOfWorkHandler
+
+    @Inject
+    ProxyHandler proxyHandler
+
+    @Inject
+    NegativeCacheHandler negativeCacheHandler
+
+    @Inject
+    HandlerContributor handlerContributor
 
     @Inject
     Provider<CpanProxyFacetImpl> proxyFacet
@@ -108,10 +144,40 @@ class CpanProxyRecipe
     }
 
     /**
+     * Matcher for archive mapping.
+     */
+    static Route.Builder archiveMatcher() {
+        new Route.Builder().matcher(
+                LogicMatchers.and(
+                        new ActionMatcher(GET, HEAD),
+                        new TokenMatcher('/{path:.+}/{filename:.+}')
+                ))
+    }
+
+    Closure assetKindHandler = { Context context, AssetKind value ->
+        context.attributes.set(AssetKind, value)
+        return context.proceed()
+    }
+
+    /**
      * Configure {@link ViewFacet}.
      */
     private ViewFacet configure(final ConfigurableViewFacet facet) {
         Router.Builder builder = new Router.Builder()
+
+        builder.route(archiveMatcher()
+                .handler(timingHandler)
+                .handler(assetKindHandler.rcurry(ARCHIVE))
+                .handler(securityHandler)
+                .handler(exceptionHandler)
+                .handler(handlerContributor)
+                .handler(negativeCacheHandler)
+                .handler(conditionalRequestHandler)
+                .handler(partialFetchHandler)
+                .handler(contentHeadersHandler)
+                .handler(unitOfWorkHandler)
+                .handler(proxyHandler)
+                .create())
 
         builder.route(new Route.Builder()
                 .matcher(BrowseUnsupportedHandler.MATCHER)
