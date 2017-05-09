@@ -37,6 +37,12 @@
       <artifactId>goodies-testsupport</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpg-jdk15on</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -56,6 +62,20 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Embed-Directory>lib</Embed-Directory>
+            <Embed-Dependency>
+              bcpg-jdk15on|bcprov-jdk15on
+            </Embed-Dependency>
+            <Embed-Transitive>true</Embed-Transitive>
+          </instructions>
+        </configuration>
       </plugin>
     </plugins>
   </build>
