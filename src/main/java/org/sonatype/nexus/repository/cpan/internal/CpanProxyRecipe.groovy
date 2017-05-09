@@ -56,8 +56,9 @@ class CpanProxyRecipe
 {
     public static final String NAME = 'cpan-proxy'
 
-    //@Inject
-    //Provider<RSecurityFacet> securityFacet
+    @Inject
+    Provider<CpanSecurityFacet> securityFacet
+
     @Inject
     Provider<ConfigurableViewFacet> viewFacet
 
@@ -120,7 +121,7 @@ class CpanProxyRecipe
 
     @Override
     void apply(@Nonnull final Repository repository) throws Exception {
-        //repository.attach(securityFacet.get())
+        repository.attach(securityFacet.get())
         repository.attach(configure(viewFacet.get()))
         repository.attach(httpClientFacet.get())
         repository.attach(negativeCacheFacet.get())
