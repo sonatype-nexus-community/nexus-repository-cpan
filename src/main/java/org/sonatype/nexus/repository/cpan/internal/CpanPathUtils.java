@@ -16,7 +16,6 @@ import org.sonatype.nexus.repository.view.Context;
 import org.sonatype.nexus.repository.view.matchers.token.TokenMatcher;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.name;
 
 /**
  * Utility Methods for working CPAN routes and paths
@@ -29,7 +28,10 @@ public final class CpanPathUtils {
         return match(state, "path");
     }
 
-    private static String match(TokenMatcher.State state, String path) {
+    /**
+     * Utility method encapsulating getting a particular token by name from a matcher, including preconditions.
+     */
+    private static String match(TokenMatcher.State state, String name) {
         checkNotNull(state);
         String result = state.getTokens().get(name);
         checkNotNull(result);
