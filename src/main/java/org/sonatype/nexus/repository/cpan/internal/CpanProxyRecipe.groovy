@@ -18,6 +18,7 @@ import org.sonatype.nexus.repository.Repository
 import org.sonatype.nexus.repository.attributes.AttributesFacet
 import org.sonatype.nexus.repository.cache.NegativeCacheFacet
 import org.sonatype.nexus.repository.cache.NegativeCacheHandler
+import org.sonatype.nexus.repository.http.HttpHandlers
 import org.sonatype.nexus.repository.http.PartialFetchHandler
 import org.sonatype.nexus.repository.httpclient.HttpClientFacet
 import org.sonatype.nexus.repository.proxy.ProxyHandler
@@ -56,6 +57,10 @@ class CpanProxyRecipe
 {
     public static final String NAME = 'cpan-proxy'
 
+
+    @Inject
+    Provider<CpanProxyFacetImpl> proxyFacet
+
     @Inject
     Provider<CpanSecurityFacet> securityFacet
 
@@ -72,43 +77,13 @@ class CpanProxyRecipe
     Provider<AttributesFacet> attributesFacet
 
     @Inject
-    ExceptionHandler exceptionHandler
-
-    @Inject
-    TimingHandler timingHandler
-
-    @Inject
-    SecurityHandler securityHandler
-
-    @Inject
-    PartialFetchHandler partialFetchHandler
-
-    @Inject
-    ConditionalRequestHandler conditionalRequestHandler
-
-    @Inject
-    ContentHeadersHandler contentHeadersHandler
-
-    @Inject
-    UnitOfWorkHandler unitOfWorkHandler
-
-    @Inject
     BrowseUnsupportedHandler browseUnsupportedHandler
-
-    @Inject
-    HandlerContributor handlerContributor
 
     @Inject
     Provider<SingleAssetComponentMaintenance> componentMaintenanceFacet
 
     @Inject
     Provider<HttpClientFacet> httpClientFacet
-
-    @Inject
-    ProxyHandler proxyHandler
-
-    @Inject
-    NegativeCacheHandler negativeCacheHandler
 
     @Inject
     Provider<NegativeCacheFacet> negativeCacheFacet
@@ -126,7 +101,7 @@ class CpanProxyRecipe
         repository.attach(httpClientFacet.get())
         repository.attach(negativeCacheFacet.get())
         repository.attach(componentMaintenanceFacet.get())
-        //repository.attach(proxyFacet.get())
+        repository.attach(proxyFacet.get())
         repository.attach(storageFacet.get())
         repository.attach(searchFacet.get())
         repository.attach(attributesFacet.get())
