@@ -50,6 +50,7 @@ import javax.inject.Named
 import javax.inject.Provider
 import javax.inject.Singleton
 
+import static org.sonatype.nexus.repository.cpan.internal.AssetKind.*
 import static org.sonatype.nexus.repository.http.HttpMethods.GET
 import static org.sonatype.nexus.repository.http.HttpMethods.HEAD
 
