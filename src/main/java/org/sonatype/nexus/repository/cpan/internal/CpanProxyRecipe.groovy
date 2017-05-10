@@ -113,9 +113,6 @@ class CpanProxyRecipe
     Provider<AttributesFacet> attributesFacet
 
     @Inject
-    BrowseUnsupportedHandler browseUnsupportedHandler
-
-    @Inject
     Provider<SingleAssetComponentMaintenance> componentMaintenanceFacet
 
     @Inject
