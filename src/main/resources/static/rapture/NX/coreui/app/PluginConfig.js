@@ -14,7 +14,6 @@ Ext.define('NX.coreui.app.PluginConfig', {
   '@aggregate_priority': 100,
 
   requires: [
-    'NX.coreui.app.PluginStrings',
     'NX.coreui.util.CpanRepositoryUrls'
   ]
 });
