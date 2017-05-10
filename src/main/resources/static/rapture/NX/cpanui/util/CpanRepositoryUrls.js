@@ -15,7 +15,7 @@ Ext.define('NX.cpanui.util.CpanRepositoryUrls', {
 
   singleton: true,
   requires: [
-    'NX.cpanui.util.RepositoryUrls',
+    'NX.coreui.util.RepositoryUrls',
     'NX.util.Url'
   ]
 }, function(self) {

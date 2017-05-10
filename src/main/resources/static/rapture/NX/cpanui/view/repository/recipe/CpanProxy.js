@@ -16,14 +16,14 @@
  * Repository "Settings" form for a Cpan Proxy repository
  */
 Ext.define('NX.cpanui.view.repository.recipe.CpanProxy', {
-  extend: 'NX.cpanui.view.repository.RepositorySettingsForm',
-  alias: 'widget.nx-cpanui-repository-cpan-proxy',
+  extend: 'NX.coreui.view.repository.RepositorySettingsForm',
+  alias: 'widget.nx-coreui-repository-cpan-proxy',
   requires: [
     'NX.cpanui.view.repository.facet.CpanFacet',
-    'NX.cpanui.view.repository.facet.ProxyFacet',
-    'NX.cpanui.view.repository.facet.StorageFacet',
-    'NX.cpanui.view.repository.facet.HttpClientFacet',
-    'NX.cpanui.view.repository.facet.NegativeCacheFacet'
+    'NX.coreui.view.repository.facet.ProxyFacet',
+    'NX.coreui.view.repository.facet.StorageFacet',
+    'NX.coreui.view.repository.facet.HttpClientFacet',
+    'NX.coreui.view.repository.facet.NegativeCacheFacet'
   ],
 
   /**
@@ -34,10 +34,10 @@ Ext.define('NX.cpanui.view.repository.recipe.CpanProxy', {
 
     me.items = [
       {xtype: 'nx-cpanui-repository-cpan-facet'},
-      {xtype: 'nx-cpanui-repository-proxy-facet'},
-      {xtype: 'nx-cpanui-repository-storage-facet'},
-      {xtype: 'nx-cpanui-repository-negativecache-facet'},
-      {xtype: 'nx-cpanui-repository-httpclient-facet'}
+      {xtype: 'nx-coreui-repository-proxy-facet'},
+      {xtype: 'nx-coreui-repository-storage-facet'},
+      {xtype: 'nx-coreui-repository-negativecache-facet'},
+      {xtype: 'nx-coreui-repository-httpclient-facet'}
     ];
 
     me.callParent();
