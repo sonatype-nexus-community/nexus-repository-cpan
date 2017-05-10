@@ -33,7 +33,7 @@ Ext.define('NX.coreui.view.repository.recipe.CpanProxy', {
     var me = this;
 
     me.items = [
-      {xtype: 'nx-aptui-repository-cpan-facet'},
+      {xtype: 'nx-coreui-repository-cpan-facet'},
       {xtype: 'nx-coreui-repository-proxy-facet'},
       {xtype: 'nx-coreui-repository-storage-facet'},
       {xtype: 'nx-coreui-repository-negativecache-facet'},
