@@ -19,7 +19,6 @@ Ext.define('NX.cpanui.view.repository.recipe.CpanProxy', {
   extend: 'NX.coreui.view.repository.RepositorySettingsForm',
   alias: 'widget.nx-coreui-repository-cpan-proxy',
   requires: [
-    'NX.cpanui.view.repository.facet.CpanFacet',
     'NX.coreui.view.repository.facet.ProxyFacet',
     'NX.coreui.view.repository.facet.StorageFacet',
     'NX.coreui.view.repository.facet.HttpClientFacet',
@@ -33,7 +32,6 @@ Ext.define('NX.cpanui.view.repository.recipe.CpanProxy', {
     var me = this;
 
     me.items = [
-      {xtype: 'nx-cpanui-repository-cpan-facet'},
       {xtype: 'nx-coreui-repository-proxy-facet'},
       {xtype: 'nx-coreui-repository-storage-facet'},
       {xtype: 'nx-coreui-repository-negativecache-facet'},
