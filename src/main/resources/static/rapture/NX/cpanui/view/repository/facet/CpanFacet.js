@@ -10,17 +10,31 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-Ext.define('NX.coreui.util.CpanRepositoryUrls', {
-  '@aggregate_priority': 90,
 
-  singleton: true,
+/**
+ * Configuration specific to CPAN repositories.
+ */
+Ext.define('NX.cpanui.view.repository.facet.CpanFacet', {
+  extend: 'Ext.form.FieldContainer',
+  alias: 'widget.nx-cpanui-repository-cpan-facet',
   requires: [
-    'NX.coreui.util.RepositoryUrls',
-    'NX.util.Url'
-  ]
-}, function(self) {
-	NX.coreui.util.RepositoryUrls.addRepositoryUrlStrategy('cpan', function (assetModel) {
-      var repositoryName = assetModel.get('repositoryName'), assetName = assetModel.get('name');
-      return NX.util.Url.asLink(NX.util.Url.baseUrl + '/repository/' + repositoryName + '/' + assetName, assetName);
-    });
+    'NX.I18n'
+  ],
+  /**
+   * @override
+   */
+  initComponent: function() {
+    var me = this;
+
+    me.items = [
+      {
+        xtype: 'fieldset',
+        cls: 'nx-form-section',
+        title: NX.I18n.get('Repository_Facet_CpanFacet_Title')
+      }
+    ];
+
+    me.callParent();
+  }
+
 });
