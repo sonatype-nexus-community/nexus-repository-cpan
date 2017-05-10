@@ -49,8 +49,8 @@ public class CpanParser
         .setLicense(read("license", metadata))
         .setAuthor(read("author", metadata))
         .setGeneratedBy(read("generated_by", metadata))
-        .setDistributionType(read("distribution_type", metadata))
-        .setRequires(readRequires(metadata));
+        .setDistributionType(read("distribution_type", metadata));
+        //.setRequires(readRequires(metadata));
   }
 
   private List<CpanRequired> readRequires(final Map metadata) {
