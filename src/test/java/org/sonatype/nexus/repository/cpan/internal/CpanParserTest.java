@@ -26,7 +26,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class CpanParserTest
     extends TestSupport
 {
-  static final String PACKAGE_NAME = "Geo-Calc-0.12.tar";
+  static final String PACKAGE_NAME = "Geo-Calc-0.12.tar.gz";
 
   InputStream cpanPackage;
 
@@ -76,7 +76,7 @@ public class CpanParserTest
     assertThat(attributes.getDistributionType(), is(equalTo("module")));
   }
 
-/*  @Test
+ @Test
   public void setRequires() throws Exception {
     assertThat(attributes.getRequires().size(), is(equalTo(8)));
     assertRequired(attributes.getRequires().get(0), "Math::Trig", "1.04");
@@ -87,7 +87,7 @@ public class CpanParserTest
     assertRequired(attributes.getRequires().get(5), "Math::BigFloat", "1.6");
     assertRequired(attributes.getRequires().get(6), "Math::Units", "1.3");
     assertRequired(attributes.getRequires().get(7), "POSIX", null);
-  }*/
+  }
 
   private void assertRequired(final CpanRequired firstRequired, final String name, final String version) {
     assertThat(firstRequired.getName(), is(equalTo(name)));

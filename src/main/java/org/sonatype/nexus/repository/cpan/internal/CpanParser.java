@@ -25,6 +25,7 @@ import org.sonatype.goodies.common.ComponentSupport;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.yaml.snakeyaml.Yaml;
 
 import static java.util.Collections.emptyMap;
@@ -49,8 +50,8 @@ public class CpanParser
         .setLicense(read("license", metadata))
         .setAuthor(read("author", metadata))
         .setGeneratedBy(read("generated_by", metadata))
-        .setDistributionType(read("distribution_type", metadata));
-        //.setRequires(readRequires(metadata));
+        .setDistributionType(read("distribution_type", metadata))
+        .setRequires(readRequires(metadata));
   }
 
   private List<CpanRequired> readRequires(final Map metadata) {
@@ -63,11 +64,13 @@ public class CpanParser
 
   private Map readMetadataFromTar(final InputStream in) {
     try {
-      try (TarArchiveInputStream tar = new TarArchiveInputStream(in)) {
-        TarArchiveEntry entry;
-        while ((entry = tar.getNextTarEntry()) != null) {
-          if (entry.getName().contains(METADATA_FILENAME)) {
-            return readFile(tar);
+      try(GzipCompressorInputStream gzip = new GzipCompressorInputStream(in)) {
+        try (TarArchiveInputStream tar = new TarArchiveInputStream(gzip)) {
+          TarArchiveEntry entry;
+          while ((entry = tar.getNextTarEntry()) != null) {
+            if (entry.getName().contains(METADATA_FILENAME)) {
+              return readFile(tar);
+            }
           }
         }
       }
