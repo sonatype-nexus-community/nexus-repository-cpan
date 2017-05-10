@@ -19,8 +19,6 @@ import org.sonatype.nexus.repository.Format;
 
 /**
  * CPAN repository format.
- *
- * @since 3.4
  */
 @Named(CpanFormat.NAME)
 @Singleton
