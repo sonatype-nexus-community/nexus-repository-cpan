@@ -179,10 +179,6 @@ class CpanProxyRecipe
                 .handler(proxyHandler)
                 .create())
 
-        builder.route(new Route.Builder()
-                .matcher(BrowseUnsupportedHandler.MATCHER)
-                .handler(browseUnsupportedHandler)
-                .create())
         builder.defaultHandlers(HttpHandlers.notFound())
         facet.configure(builder.create())
         return facet
