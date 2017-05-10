@@ -28,8 +28,13 @@ import org.sonatype.nexus.transaction.UnitOfWork;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.repository.cpan.internal.AssetKind.ARCHIVE;
 import static org.sonatype.nexus.repository.cpan.internal.CpanFacetUtils.*;
 import static org.sonatype.nexus.repository.cpan.internal.CpanPathUtils.filename;
@@ -40,9 +45,17 @@ import static org.sonatype.nexus.repository.storage.AssetEntityAdapter.P_ASSET_K
 /**
  * CPAN {@link ProxyFacet}
  */
+@Named
 public class CpanProxyFacetImpl
     extends ProxyFacetSupport
 {
+    private final CpanParser cpanParser;
+
+    @Inject
+    public CpanProxyFacetImpl(final CpanParser cpanParser) {
+        this.cpanParser = checkNotNull(cpanParser);
+    }
+
     // HACK: Workaround for known CGLIB issue, forces an Import-Package for org.sonatype.nexus.repository.config
     @Override
     protected void doValidate(final Configuration configuration) throws Exception {
@@ -84,11 +97,17 @@ public class CpanProxyFacetImpl
         Bucket bucket = tx.findBucket(getRepository());
         String assetPath = path(path, filename);
 
-        String name = "test";
-        String version = "1.0.0";
-        Component component = findComponent(tx, getRepository(), name, version);
+        CpanAttributes cpanAttributes;
+
+        try (InputStream in = archiveContent.get()) {
+            cpanAttributes = cpanParser.parse(in);
+        }
+
+        Component component = findComponent(tx, getRepository(), cpanAttributes.getName(), cpanAttributes.getVersion());
         if (component == null) {
-            component = tx.createComponent(bucket, getRepository().getFormat()).name(name).version(version);
+            component = tx.createComponent(bucket, getRepository().getFormat())
+                .name(cpanAttributes.getName())
+                .version(cpanAttributes.getVersion());
         }
         tx.saveComponent(component);
 
