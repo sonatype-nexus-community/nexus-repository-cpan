@@ -77,7 +77,6 @@ public class CpanProxyFacetImpl
       default:
         throw new IllegalStateException();
     }
-
   }
 
   private Content putArchive(final String path, final String filename, final Content content) throws IOException {

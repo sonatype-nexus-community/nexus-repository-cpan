@@ -31,6 +31,7 @@ import org.sonatype.nexus.repository.http.HttpHandlers
 import org.sonatype.nexus.repository.http.PartialFetchHandler
 import org.sonatype.nexus.repository.httpclient.HttpClientFacet
 import org.sonatype.nexus.repository.proxy.ProxyHandler
+import org.sonatype.nexus.repository.purge.PurgeUnusedFacet
 import org.sonatype.nexus.repository.search.SearchFacet
 import org.sonatype.nexus.repository.security.SecurityHandler
 import org.sonatype.nexus.repository.storage.SingleAssetComponentMaintenance
@@ -125,6 +126,9 @@ class CpanProxyRecipe
   Provider<NegativeCacheFacet> negativeCacheFacet
 
   @Inject
+  Provider<PurgeUnusedFacet> purgeUnusedFacet
+
+  @Inject
   CpanProxyRecipe(@Named(ProxyType.NAME) final Type type,
                   @Named(CpanFormat.NAME) final Format format)
   {
@@ -141,6 +145,7 @@ class CpanProxyRecipe
     repository.attach(proxyFacet.get())
     repository.attach(storageFacet.get())
     repository.attach(searchFacet.get())
+    repository.attach(purgeUnusedFacet.get())
     repository.attach(attributesFacet.get())
   }
 
