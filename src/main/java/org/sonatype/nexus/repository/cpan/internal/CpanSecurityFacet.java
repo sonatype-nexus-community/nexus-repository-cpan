@@ -24,13 +24,13 @@ import org.sonatype.nexus.repository.security.VariableResolverAdapter;
  */
 @Named
 public class CpanSecurityFacet
-        extends SecurityFacetSupport
+    extends SecurityFacetSupport
 {
-    @Inject
-    public CpanSecurityFacet(final CpanFormatSecurityContributor securityResource,
-                          @Named("simple") final VariableResolverAdapter variableResolverAdapter,
-                          final ContentPermissionChecker contentPermissionChecker)
-    {
-        super(securityResource, variableResolverAdapter, contentPermissionChecker);
-    }
+  @Inject
+  public CpanSecurityFacet(final CpanFormatSecurityContributor securityResource,
+                           @Named("simple") final VariableResolverAdapter variableResolverAdapter,
+                           final ContentPermissionChecker contentPermissionChecker)
+  {
+    super(securityResource, variableResolverAdapter, contentPermissionChecker);
+  }
 }
