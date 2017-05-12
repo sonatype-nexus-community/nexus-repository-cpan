@@ -11,24 +11,27 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 package org.sonatype.nexus.repository.cpan.internal;
+
 import javax.annotation.Nonnull;
+
 import org.sonatype.nexus.repository.cache.CacheControllerHolder;
 import org.sonatype.nexus.repository.cache.CacheControllerHolder.CacheType;
+
 /**
  * Asset kinds for CPAN.
  */
 enum AssetKind
 {
-    ARCHIVE(CacheControllerHolder.CONTENT);
+  ARCHIVE(CacheControllerHolder.CONTENT);
 
-    private final CacheType cacheType;
+  private final CacheType cacheType;
 
-    AssetKind(final CacheType cacheType) {
-        this.cacheType = cacheType;
-    }
+  AssetKind(final CacheType cacheType) {
+    this.cacheType = cacheType;
+  }
 
-    @Nonnull
-    public CacheType getCacheType() {
-        return cacheType;
-    }
+  @Nonnull
+  public CacheType getCacheType() {
+    return cacheType;
+  }
 }

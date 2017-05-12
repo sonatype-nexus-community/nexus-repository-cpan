@@ -18,16 +18,17 @@ import javax.inject.Singleton;
 
 import org.sonatype.nexus.repository.Format;
 import org.sonatype.nexus.repository.security.RepositoryFormatSecurityContributor;
+
 /**
  * CPAN format security resource.
  */
 @Named
 @Singleton
 public class CpanFormatSecurityContributor
-        extends RepositoryFormatSecurityContributor
+    extends RepositoryFormatSecurityContributor
 {
-    @Inject
-    public CpanFormatSecurityContributor(@Named(CpanFormat.NAME) final Format format) {
-        super(format);
-    }
+  @Inject
+  public CpanFormatSecurityContributor(@Named(CpanFormat.NAME) final Format format) {
+    super(format);
+  }
 }

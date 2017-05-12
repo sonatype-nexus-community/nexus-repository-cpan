@@ -20,46 +20,47 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Utility Methods for working CPAN routes and paths
  */
-public final class CpanPathUtils {
-    /**
-     * * Returns the name from a {@link TokenMatcher.State}.
-     */
-    static String path(final TokenMatcher.State state) {
-        return match(state, "path");
-    }
+public final class CpanPathUtils
+{
+  /**
+   * * Returns the name from a {@link TokenMatcher.State}.
+   */
+  static String path(final TokenMatcher.State state) {
+    return match(state, "path");
+  }
 
-    /**
-     * Utility method encapsulating getting a particular token by name from a matcher, including preconditions.
-     */
-    private static String match(TokenMatcher.State state, String name) {
-        checkNotNull(state);
-        String result = state.getTokens().get(name);
-        checkNotNull(result);
-        return result;
-    }
+  /**
+   * Utility method encapsulating getting a particular token by name from a matcher, including preconditions.
+   */
+  private static String match(TokenMatcher.State state, String name) {
+    checkNotNull(state);
+    String result = state.getTokens().get(name);
+    checkNotNull(result);
+    return result;
+  }
 
-    private CpanPathUtils() {
-        // empty
-    }
+  private CpanPathUtils() {
+    // empty
+  }
 
-    /**
-     * Builds a path to an archive for a particular path and filename.
-     */
-    static String path(final String path, final String filename) {
-        return path + "/" + filename;
-    }
+  /**
+   * Builds a path to an archive for a particular path and filename.
+   */
+  static String path(final String path, final String filename) {
+    return path + "/" + filename;
+  }
 
-    /**
-     * Returns the filename from a {@link TokenMatcher.State}.
-     */
-    static String filename(final TokenMatcher.State state) {
-        return match(state, "filename");
-    }
+  /**
+   * Returns the filename from a {@link TokenMatcher.State}.
+   */
+  static String filename(final TokenMatcher.State state) {
+    return match(state, "filename");
+  }
 
-    /**
-     * Returns the {@link TokenMatcher.State} for the content.
-     */
-    static TokenMatcher.State matcherState(final Context context) {
-        return context.getAttributes().require(TokenMatcher.State.class);
-    }
+  /**
+   * Returns the {@link TokenMatcher.State} for the content.
+   */
+  static TokenMatcher.State matcherState(final Context context) {
+    return context.getAttributes().require(TokenMatcher.State.class);
+  }
 }

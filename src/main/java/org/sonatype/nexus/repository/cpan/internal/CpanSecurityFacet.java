@@ -18,6 +18,7 @@ import javax.inject.Named;
 import org.sonatype.nexus.repository.security.ContentPermissionChecker;
 import org.sonatype.nexus.repository.security.SecurityFacetSupport;
 import org.sonatype.nexus.repository.security.VariableResolverAdapter;
+
 /**
  * CPAN format security facet.
  */
