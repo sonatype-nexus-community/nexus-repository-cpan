@@ -37,9 +37,6 @@ import org.sonatype.nexus.transaction.UnitOfWork;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.repository.cpan.internal.AssetKind.ARCHIVE;
 import static org.sonatype.nexus.repository.cpan.internal.CpanFacetUtils.*;
-import static org.sonatype.nexus.repository.cpan.internal.CpanPathUtils.filename;
-import static org.sonatype.nexus.repository.cpan.internal.CpanPathUtils.matcherState;
-import static org.sonatype.nexus.repository.cpan.internal.CpanPathUtils.path;
 import static org.sonatype.nexus.repository.storage.AssetEntityAdapter.P_ASSET_KIND;
 
 /**
@@ -50,10 +47,12 @@ public class CpanProxyFacetImpl
     extends ProxyFacetSupport
 {
   private final CpanParser cpanParser;
+  private final CpanPathUtils cpanPathUtils;
 
   @Inject
-  public CpanProxyFacetImpl(final CpanParser cpanParser) {
+  public CpanProxyFacetImpl(final CpanParser cpanParser, final CpanPathUtils cpanPathUtils) {
     this.cpanParser = checkNotNull(cpanParser);
+    this.cpanPathUtils = checkNotNull(cpanPathUtils);
   }
 
   // HACK: Workaround for known CGLIB issue, forces an Import-Package for org.sonatype.nexus.repository.config
@@ -70,10 +69,10 @@ public class CpanProxyFacetImpl
   @Override
   protected Content store(final Context context, final Content content) throws IOException {
     AssetKind assetKind = context.getAttributes().require(AssetKind.class);
-    TokenMatcher.State matcherState = matcherState(context);
+    TokenMatcher.State matcherState = cpanPathUtils.matcherState(context);
     switch (assetKind) {
       case ARCHIVE:
-        return putArchive(path(matcherState), filename(matcherState), content);
+        return putArchive(cpanPathUtils.path(matcherState), cpanPathUtils.filename(matcherState), content);
       default:
         throw new IllegalStateException();
     }
@@ -94,7 +93,7 @@ public class CpanProxyFacetImpl
   {
     StorageTx tx = UnitOfWork.currentTx();
     Bucket bucket = tx.findBucket(getRepository());
-    String assetPath = path(path, filename);
+    String assetPath = cpanPathUtils.path(path, filename);
 
     CpanAttributes cpanAttributes;
 
@@ -145,10 +144,10 @@ public class CpanProxyFacetImpl
   @Override
   protected Content getCachedContent(final Context context) throws IOException {
     AssetKind assetKind = context.getAttributes().require(AssetKind.class);
-    TokenMatcher.State matcherState = matcherState(context);
+    TokenMatcher.State matcherState = cpanPathUtils.matcherState(context);
     switch (assetKind) {
       case ARCHIVE:
-        return getAsset(path(path(matcherState), filename(matcherState)));
+        return getAsset(cpanPathUtils.path(cpanPathUtils.path(matcherState), cpanPathUtils.filename(matcherState)));
       default:
         throw new IllegalStateException();
     }

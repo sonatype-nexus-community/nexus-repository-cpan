@@ -32,6 +32,7 @@ public class CpanProxyFacetImplTest
 {
   private CpanProxyFacetImpl underTest;
   private CpanParser cpanParser;
+  private CpanPathUtils cpanPathUtils;
 
   @Mock
   Context context;
@@ -42,7 +43,8 @@ public class CpanProxyFacetImplTest
   @Before
   public void setUp() throws Exception {
     cpanParser = new CpanParser();
-    underTest = new CpanProxyFacetImpl(cpanParser);
+    cpanPathUtils = new CpanPathUtils();
+    underTest = new CpanProxyFacetImpl(cpanParser, cpanPathUtils);
   }
 
   @Test
