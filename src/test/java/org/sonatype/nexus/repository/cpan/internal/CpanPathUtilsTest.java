@@ -96,4 +96,11 @@ public class CpanPathUtilsTest
     String expectedResult = path + "/" + filename;
     assertThat(underTest.path(path, filename), is(expectedResult));
   }
+
+  @Test
+  public void getChecksumPath() {
+    String path = "path";
+    String expectedResult = path + "/CHECKSUM";
+    assertThat(underTest.checksumPath(path), is(expectedResult));
+  }
 }
