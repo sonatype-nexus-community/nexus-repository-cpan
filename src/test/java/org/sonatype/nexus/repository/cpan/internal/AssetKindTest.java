@@ -28,7 +28,12 @@ public class AssetKindTest
     extends TestSupport
 {
   @Test
-  public void testArchiveIsContentCacheType() {
+  public void archiveIsContentCacheType() {
     assertThat(AssetKind.ARCHIVE.getCacheType(), is(equalTo(CacheControllerHolder.CONTENT)));
+  }
+
+  @Test
+  public void checksumIsMetdataCacheType() {
+    assertThat(AssetKind.CHECKSUM.getCacheType(), is(equalTo(CacheControllerHolder.METADATA)));
   }
 }

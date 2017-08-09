@@ -25,6 +25,7 @@ import org.sonatype.nexus.repository.view.Payload;
 import org.sonatype.nexus.repository.view.payloads.BlobPayload;
 
 import javax.annotation.Nullable;
+import javax.inject.Named;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,13 +39,10 @@ import static org.sonatype.nexus.repository.storage.MetadataNodeEntityAdapter.P_
 /**
  * Shared code between CPAN facets.
  */
-public final class CpanFacetUtils
+@Named
+public class CpanDataAccess
 {
   public static final List<HashAlgorithm> HASH_ALGORITHMS = ImmutableList.of(SHA1);
-
-  private CpanFacetUtils() {
-    // empty
-  }
 
   /**
    * Find a component by its name and tag (version)
@@ -52,7 +50,7 @@ public final class CpanFacetUtils
    * @return found component of null if not found
    */
   @Nullable
-  static Component findComponent(final StorageTx tx,
+  public Component findComponent(final StorageTx tx,
                                  final Repository repository,
                                  final String name,
                                  final String version)
@@ -76,7 +74,7 @@ public final class CpanFacetUtils
    * @return found asset or null if not found
    */
   @Nullable
-  static Asset findAsset(final StorageTx tx, final Bucket bucket, final String assetName) {
+  public Asset findAsset(final StorageTx tx, final Bucket bucket, final String assetName) {
     return tx.findAssetWithProperty(MetadataNodeEntityAdapter.P_NAME, assetName, bucket);
   }
 
@@ -85,7 +83,7 @@ public final class CpanFacetUtils
    *
    * @return blob content
    */
-  static Content saveAsset(final StorageTx tx,
+  public Content saveAsset(final StorageTx tx,
                            final Asset asset,
                            final Supplier<InputStream> contentSupplier,
                            final Payload payload) throws IOException
@@ -104,7 +102,7 @@ public final class CpanFacetUtils
    *
    * @return blob content
    */
-  static Content saveAsset(final StorageTx tx,
+  public Content saveAsset(final StorageTx tx,
                            final Asset asset,
                            final Supplier<InputStream> contentSupplier,
                            final String contentType,
@@ -124,10 +122,9 @@ public final class CpanFacetUtils
    *
    * @return content of asset blob
    */
-  static Content toContent(final Asset asset, final Blob blob) {
+  public Content toContent(final Asset asset, final Blob blob) {
     Content content = new Content(new BlobPayload(blob, asset.requireContentType()));
     Content.extractFromAsset(asset, HASH_ALGORITHMS, content.getAttributes());
     return content;
   }
-
 }

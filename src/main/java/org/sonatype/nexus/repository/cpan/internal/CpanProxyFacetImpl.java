@@ -36,7 +36,7 @@ import org.sonatype.nexus.transaction.UnitOfWork;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.repository.cpan.internal.AssetKind.ARCHIVE;
-import static org.sonatype.nexus.repository.cpan.internal.CpanFacetUtils.*;
+import static org.sonatype.nexus.repository.cpan.internal.AssetKind.CHECKSUM;
 import static org.sonatype.nexus.repository.storage.AssetEntityAdapter.P_ASSET_KIND;
 
 /**
@@ -48,11 +48,13 @@ public class CpanProxyFacetImpl
 {
   private final CpanParser cpanParser;
   private final CpanPathUtils cpanPathUtils;
+  private final CpanDataAccess cpanDataAccess;
 
   @Inject
-  public CpanProxyFacetImpl(final CpanParser cpanParser, final CpanPathUtils cpanPathUtils) {
+  public CpanProxyFacetImpl(final CpanParser cpanParser, final CpanPathUtils cpanPathUtils, final CpanDataAccess cpanDataAccess) {
     this.cpanParser = checkNotNull(cpanParser);
     this.cpanPathUtils = checkNotNull(cpanPathUtils);
+    this.cpanDataAccess = checkNotNull(cpanDataAccess);
   }
 
   // HACK: Workaround for known CGLIB issue, forces an Import-Package for org.sonatype.nexus.repository.config
@@ -72,15 +74,45 @@ public class CpanProxyFacetImpl
     TokenMatcher.State matcherState = cpanPathUtils.matcherState(context);
     switch (assetKind) {
       case ARCHIVE:
+        log.debug("ARCHIVE" + cpanPathUtils.path(matcherState));
         return putArchive(cpanPathUtils.path(matcherState), cpanPathUtils.filename(matcherState), content);
+      case CHECKSUM:
+        log.debug("CHECKSUM" + cpanPathUtils.path(matcherState));
+        return putChecksum(cpanPathUtils.path(matcherState), content);
       default:
         throw new IllegalStateException();
     }
   }
 
+  private Content putChecksum(final String path, final Content content) throws IOException {
+    StorageFacet storageFacet = facet(StorageFacet.class);
+    try (TempBlob tempBlob = storageFacet.createTempBlob(content.openInputStream(), CpanDataAccess.HASH_ALGORITHMS)) {
+      return doPutChecksum(path, tempBlob, content);
+    }
+  }
+
+  @TransactionalStoreBlob
+  protected Content doPutChecksum(final String path,
+                                final TempBlob metadataContent,
+                                final Payload payload) throws IOException
+  {
+    StorageTx tx = UnitOfWork.currentTx();
+    Bucket bucket = tx.findBucket(getRepository());
+
+    String assetPath = cpanPathUtils.checksumPath(path);
+
+    Asset asset = cpanDataAccess.findAsset(tx, bucket, assetPath);
+    if (asset == null) {
+      asset = tx.createAsset(bucket, getRepository().getFormat());
+      asset.name(assetPath);
+      asset.formatAttributes().set(P_ASSET_KIND, CHECKSUM.name());
+    }
+    return cpanDataAccess.saveAsset(tx, asset, metadataContent, payload);
+  }
+
   private Content putArchive(final String path, final String filename, final Content content) throws IOException {
     StorageFacet storageFacet = facet(StorageFacet.class);
-    try (TempBlob tempBlob = storageFacet.createTempBlob(content.openInputStream(), CpanFacetUtils.HASH_ALGORITHMS)) {
+    try (TempBlob tempBlob = storageFacet.createTempBlob(content.openInputStream(), CpanDataAccess.HASH_ALGORITHMS)) {
       return doPutArchive(path, filename, tempBlob, content);
     }
   }
@@ -101,7 +133,7 @@ public class CpanProxyFacetImpl
       cpanAttributes = cpanParser.parse(in);
     }
 
-    Component component = findComponent(tx, getRepository(), cpanAttributes.getName(), cpanAttributes.getVersion());
+    Component component = cpanDataAccess.findComponent(tx, getRepository(), cpanAttributes.getName(), cpanAttributes.getVersion());
     if (component == null) {
       component = tx.createComponent(bucket, getRepository().getFormat())
           .name(cpanAttributes.getName())
@@ -109,13 +141,13 @@ public class CpanProxyFacetImpl
     }
     tx.saveComponent(component);
 
-    Asset asset = findAsset(tx, bucket, assetPath);
+    Asset asset = cpanDataAccess.findAsset(tx, bucket, assetPath);
     if (asset == null) {
       asset = tx.createAsset(bucket, component);
       asset.name(assetPath);
       asset.formatAttributes().set(P_ASSET_KIND, ARCHIVE.name());
     }
-    return saveAsset(tx, asset, archiveContent, payload);
+    return cpanDataAccess.saveAsset(tx, asset, archiveContent, payload);
   }
 
   @Override
@@ -148,6 +180,8 @@ public class CpanProxyFacetImpl
     switch (assetKind) {
       case ARCHIVE:
         return getAsset(cpanPathUtils.path(cpanPathUtils.path(matcherState), cpanPathUtils.filename(matcherState)));
+      case CHECKSUM:
+        return getAsset(cpanPathUtils.checksumPath(cpanPathUtils.path(matcherState)));
       default:
         throw new IllegalStateException();
     }
@@ -156,15 +190,13 @@ public class CpanProxyFacetImpl
   @TransactionalTouchBlob
   protected Content getAsset(final String name) {
     StorageTx tx = UnitOfWork.currentTx();
-    Asset asset = findAsset(tx, tx.findBucket(getRepository()), name);
+    Asset asset = cpanDataAccess.findAsset(tx, tx.findBucket(getRepository()), name);
     if (asset == null) {
       return null;
     }
     if (asset.markAsDownloaded()) {
       tx.saveAsset(asset);
     }
-    return toContent(asset, tx.requireBlob(asset.requireBlobRef()));
+    return cpanDataAccess.toContent(asset, tx.requireBlob(asset.requireBlobRef()));
   }
-
 }
-

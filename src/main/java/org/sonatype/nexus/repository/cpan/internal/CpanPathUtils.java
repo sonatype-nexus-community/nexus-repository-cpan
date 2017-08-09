@@ -63,6 +63,13 @@ public class CpanPathUtils
   }
 
   /**
+   * Builds a path to the checksum for a particular path
+   */
+  public String checksumPath(final String path) {
+    return path + "/CHECKSUM";
+  }
+
+  /**
    * Returns the {@link TokenMatcher.State} for the content.
    */
   public TokenMatcher.State matcherState(final Context context) {

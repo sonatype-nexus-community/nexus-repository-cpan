@@ -33,6 +33,7 @@ public class CpanProxyFacetImplTest
   private CpanProxyFacetImpl underTest;
   private CpanParser cpanParser;
   private CpanPathUtils cpanPathUtils;
+  private CpanDataAccess cpanDataAccess;
 
   @Mock
   Context context;
@@ -44,7 +45,8 @@ public class CpanProxyFacetImplTest
   public void setUp() throws Exception {
     cpanParser = new CpanParser();
     cpanPathUtils = new CpanPathUtils();
-    underTest = new CpanProxyFacetImpl(cpanParser, cpanPathUtils);
+    cpanDataAccess = new CpanDataAccess();
+    underTest = new CpanProxyFacetImpl(cpanParser, cpanPathUtils, cpanDataAccess);
   }
 
   @Test
