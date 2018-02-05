@@ -63,6 +63,21 @@ public class CpanPathUtils
   }
 
   /**
+   * Returns the extension from a {@link TokenMatcher.State}.
+   */
+  public String extension(final TokenMatcher.State state) {
+    return match(state, "extension");
+  }
+
+
+  /**
+   * Builds a path to the archive for a particular path
+   */
+  public String archivePath(final String path, final String filename, final String extension) {
+    return path + "/" + filename + "." + extension;
+  }
+
+  /**
    * Builds a path to the checksum for a particular path
    */
   public String checksumPath(final String path) {

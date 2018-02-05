@@ -23,6 +23,7 @@ import org.sonatype.nexus.repository.cache.CacheControllerHolder.CacheType;
 enum AssetKind
 {
   ARCHIVE(CacheControllerHolder.CONTENT),
+  VARIOUS(CacheControllerHolder.METADATA),
   CHECKSUM(CacheControllerHolder.METADATA);
 
   private final CacheType cacheType;

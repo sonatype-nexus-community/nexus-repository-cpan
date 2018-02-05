@@ -37,6 +37,7 @@ import org.sonatype.nexus.transaction.UnitOfWork;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.repository.cpan.internal.AssetKind.ARCHIVE;
 import static org.sonatype.nexus.repository.cpan.internal.AssetKind.CHECKSUM;
+import static org.sonatype.nexus.repository.cpan.internal.AssetKind.VARIOUS;
 import static org.sonatype.nexus.repository.storage.AssetEntityAdapter.P_ASSET_KIND;
 
 /**
@@ -75,13 +76,43 @@ public class CpanProxyFacetImpl
     switch (assetKind) {
       case ARCHIVE:
         log.debug("ARCHIVE" + cpanPathUtils.path(matcherState));
-        return putArchive(cpanPathUtils.path(matcherState), cpanPathUtils.filename(matcherState), content);
+        return putArchive(cpanPathUtils.path(matcherState), cpanPathUtils.filename(matcherState), cpanPathUtils.extension(matcherState), content);
+      case VARIOUS:
+        log.debug(("VARIOUS" + cpanPathUtils.path(matcherState)));
+        return putVarious(cpanPathUtils.path(matcherState), cpanPathUtils.filename(matcherState), content);
       case CHECKSUM:
         log.debug("CHECKSUM" + cpanPathUtils.path(matcherState));
         return putChecksum(cpanPathUtils.path(matcherState), content);
       default:
         throw new IllegalStateException();
     }
+  }
+
+  private Content putVarious(final String path, final String filename, final Content content) throws IOException {
+    StorageFacet storageFacet = facet(StorageFacet.class);
+    try (TempBlob tempBlob = storageFacet.createTempBlob(content.openInputStream(), CpanDataAccess.HASH_ALGORITHMS)) {
+      return doPutVarious(path, filename, tempBlob, content);
+    }
+  }
+
+  @TransactionalStoreBlob
+  protected Content doPutVarious(final String path,
+                                 final String filename,
+                                 final TempBlob metadataContent,
+                                 final Payload payload) throws IOException
+  {
+    StorageTx tx = UnitOfWork.currentTx();
+    Bucket bucket = tx.findBucket(getRepository());
+
+    String assetPath = cpanPathUtils.path(path, filename);
+
+    Asset asset = cpanDataAccess.findAsset(tx, bucket, assetPath);
+    if (asset == null) {
+      asset = tx.createAsset(bucket, getRepository().getFormat());
+      asset.name(assetPath);
+      asset.formatAttributes().set(P_ASSET_KIND, VARIOUS.name());
+    }
+    return cpanDataAccess.saveAsset(tx, asset, metadataContent, payload);
   }
 
   private Content putChecksum(final String path, final Content content) throws IOException {
@@ -110,22 +141,23 @@ public class CpanProxyFacetImpl
     return cpanDataAccess.saveAsset(tx, asset, metadataContent, payload);
   }
 
-  private Content putArchive(final String path, final String filename, final Content content) throws IOException {
+  private Content putArchive(final String path, final String filename, final String extension, final Content content) throws IOException {
     StorageFacet storageFacet = facet(StorageFacet.class);
     try (TempBlob tempBlob = storageFacet.createTempBlob(content.openInputStream(), CpanDataAccess.HASH_ALGORITHMS)) {
-      return doPutArchive(path, filename, tempBlob, content);
+      return doPutArchive(path, filename, extension, tempBlob, content);
     }
   }
 
   @TransactionalStoreBlob
   protected Content doPutArchive(final String path,
                                  final String filename,
+                                 final String extension,
                                  final TempBlob archiveContent,
                                  final Payload payload) throws IOException
   {
     StorageTx tx = UnitOfWork.currentTx();
     Bucket bucket = tx.findBucket(getRepository());
-    String assetPath = cpanPathUtils.path(path, filename);
+    String assetPath = cpanPathUtils.archivePath(path, filename, extension);
 
     CpanAttributes cpanAttributes;
 
@@ -179,6 +211,11 @@ public class CpanProxyFacetImpl
     TokenMatcher.State matcherState = cpanPathUtils.matcherState(context);
     switch (assetKind) {
       case ARCHIVE:
+        return getAsset(cpanPathUtils.archivePath(
+            cpanPathUtils.path(matcherState),
+            cpanPathUtils.filename(matcherState),
+            cpanPathUtils.extension(matcherState)));
+      case VARIOUS:
         return getAsset(cpanPathUtils.path(cpanPathUtils.path(matcherState), cpanPathUtils.filename(matcherState)));
       case CHECKSUM:
         return getAsset(cpanPathUtils.checksumPath(cpanPathUtils.path(matcherState)));

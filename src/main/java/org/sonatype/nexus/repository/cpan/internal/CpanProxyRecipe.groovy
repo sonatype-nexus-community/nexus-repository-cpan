@@ -169,6 +169,17 @@ class CpanProxyRecipe
     new Route.Builder().matcher(
         LogicMatchers.and(
             new ActionMatcher(GET, HEAD),
+            new TokenMatcher('/{path:.+}/{filename:.+}.{extension:.*[tT][aA][rR]\\.[gG][zZ]}')
+        ))
+  }
+
+  /**
+   * Matcher for authors
+   */
+  static Route.Builder variousMatcher() {
+    new Route.Builder().matcher(
+        LogicMatchers.and(
+            new ActionMatcher(GET, HEAD),
             new TokenMatcher('/{path:.+}/{filename:.+}')
         ))
   }
@@ -196,6 +207,20 @@ class CpanProxyRecipe
     builder.route(archiveMatcher()
         .handler(timingHandler)
         .handler(assetKindHandler.rcurry(ARCHIVE))
+        .handler(securityHandler)
+        .handler(exceptionHandler)
+        .handler(handlerContributor)
+        .handler(negativeCacheHandler)
+        .handler(conditionalRequestHandler)
+        .handler(partialFetchHandler)
+        .handler(contentHeadersHandler)
+        .handler(unitOfWorkHandler)
+        .handler(proxyHandler)
+        .create())
+
+    builder.route(variousMatcher()
+        .handler(timingHandler)
+        .handler(assetKindHandler.rcurry(VARIOUS))
         .handler(securityHandler)
         .handler(exceptionHandler)
         .handler(handlerContributor)
