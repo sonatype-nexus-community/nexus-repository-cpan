@@ -18,7 +18,7 @@
 
 ### Proxying CPAN Repositories
 
-You can set up an P2 proxy repository to access a remote repository location, for example to proxy the official CPAN
+You can set up a CPAN proxy repository to access a remote repository location, for example to proxy the official CPAN
 repository at [https://www.cpan.org/](https://www.cpan.org/)
 
 To proxy a CPAN repository, you simply create a new 'cpan (proxy)' as documented in 
