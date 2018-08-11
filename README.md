@@ -48,6 +48,8 @@ If everything checks out, the bundle for CPAN should be available in the `target
 
 ## Using CPAN With Nexus Repository Manager 3
 
+Requires Nexus Repository Manager version >= 3.8.0
+
 [We have detailed instructions on how to get started here!](docs/CPAN_USER_DOCUMENTATION.md)
 
 ## Installing the plugin
