@@ -97,10 +97,9 @@ If you are trying to use the CPAN plugin permanently, it likely makes more sense
 * Make the following additions marked with + to `<nexus_dir>/system/org/sonatype/nexus/assemblies/nexus-core-feature/3.x.y/nexus-core-feature-3.x.y-features.xml`
 
    ```
-         <feature prerequisite="false" dependency="false">nexus-repository-rubygems</feature>
+         <feature prerequisite="false" dependency="false">nexus-repository-maven</feature>
    +     <feature prerequisite="false" dependency="false">nexus-repository-cpan</feature>
-         <feature prerequisite="false" dependency="false">nexus-repository-gitlfs</feature>
-     </feature>
+         <feature prerequisite="false" dependency="false">nexus-repository-npm</feature>
    ```
    And
    ```
