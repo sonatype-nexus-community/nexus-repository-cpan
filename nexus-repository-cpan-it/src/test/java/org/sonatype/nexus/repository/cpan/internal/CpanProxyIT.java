@@ -12,6 +12,7 @@
  */
 package org.sonatype.nexus.repository.cpan.internal;
 
+import org.sonatype.goodies.httpfixture.server.fluent.Behaviours;
 import org.sonatype.goodies.httpfixture.server.fluent.Server;
 import org.sonatype.nexus.pax.exam.NexusPaxExamSupport;
 import org.sonatype.nexus.repository.Repository;
@@ -65,7 +66,7 @@ public class CpanProxyIT
   @Test
   public void retrieveTarGzWhenRemoteOffline() throws Exception {
     Server server = Server.withPort(0).serve("/*")
-        .withBehaviours(content("Response"))
+        .withBehaviours(Behaviours.file(testData.resolveFile("Test-Dependencies-0.24.tar.gz")))
         .start();
     try {
       proxyRepo = repos.createCpanProxy("cpan-test-proxy-offline", server.getUrl().toExternalForm());
