@@ -64,12 +64,12 @@ public class CpanProxyIT
   }
 
   @Test
-  public void retrieveTarGzWhenRemoteOffline() throws Exception {
+  public void retrieveTarGzWhenRemoteOnline() throws Exception {
     Server server = Server.withPort(0).serve("/*")
         .withBehaviours(Behaviours.file(testData.resolveFile("Test-Dependencies-0.24.tar.gz")))
         .start();
     try {
-      proxyRepo = repos.createCpanProxy("cpan-test-proxy-offline", server.getUrl().toExternalForm());
+      proxyRepo = repos.createCpanProxy("cpan-test-proxy-online", server.getUrl().toExternalForm());
       proxyClient = cpanClient(proxyRepo);
       proxyClient.get(TEST_PATH);
     }
