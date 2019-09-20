@@ -67,7 +67,7 @@ public class CpanProxyIT
   }
 
   @Test
-  public void retrieveTarGzWhenRemoteOnline() throws Exception {
+  public void retrieveTarGzFromProxyWhenRemoteOffline() throws Exception {
     Server server = Server.withPort(0).serve("/*")
         .withBehaviours(Behaviours.file(testData.resolveFile("Test-Dependencies-0.24.tar.gz")))
         .start();
