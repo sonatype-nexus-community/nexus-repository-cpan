@@ -85,11 +85,11 @@ public class CpanProxyIT
 
     final Asset asset = findAsset(proxyRepo, VALID_PACKAGE_URL);
     assertThat(asset.name(), is(equalTo(VALID_PACKAGE_URL)));
-    assertThat(asset.contentType(), is(equalTo("application/x-gzip")));
-    assertThat(asset.format(), is(equalTo("cpan")));
+    assertThat(asset.contentType(), is(equalTo("application/x-gzip"))); // TODO: remove string and replace with variable
+    assertThat(asset.format(), is(equalTo("cpan"))); // TODO: remove string and replace with variable
 
     final Component component = findComponent(proxyRepo, COMPONENT_NAME);
-    assertThat(component.version(), is(equalTo("0.24")));
+    assertThat(component.version(), is(equalTo("0.24"))); // TODO: remove string and replace with variable
     assertThat(component.group(), is(equalTo(null)));
   }
 
