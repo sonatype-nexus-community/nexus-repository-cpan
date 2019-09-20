@@ -27,7 +27,6 @@ import org.ops4j.pax.exam.Option;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.sonatype.goodies.httpfixture.server.fluent.Behaviours.error;
 import static org.sonatype.nexus.testsuite.testsupport.FormatClientSupport.status;
 
 public class CpanProxyIT
