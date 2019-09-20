@@ -39,7 +39,7 @@ public class CpanProxyIT
 
   private static final String BAD_PATH = "/this/path/is/not/valid";
 
-  private static final String TEST_PATH = BASE_PATH + PACKAGE_NAME;
+  private static final String VALID_PACKAGE_URL = BASE_PATH + PACKAGE_NAME;
 
   private CpanClient proxyClient;
 
@@ -59,7 +59,7 @@ public class CpanProxyIT
   public void setup() throws Exception {
     server = Server.withPort(0).serve(BAD_PATH)
         .withBehaviours(error(HttpStatus.NOT_FOUND))
-        .serve("/" + TEST_PATH)
+        .serve("/" + VALID_PACKAGE_URL)
         .withBehaviours(Behaviours.file(testData.resolveFile(PACKAGE_NAME)))
         .start();
 
@@ -74,7 +74,7 @@ public class CpanProxyIT
 
   @Test
   public void retrieveTarGzFromProxyWhenRemoteOnline() throws Exception {
-    assertThat(status(proxyClient.get(TEST_PATH)), is(200));
+    assertThat(status(proxyClient.get(VALID_PACKAGE_URL)), is(200));
   }
 
   @After
