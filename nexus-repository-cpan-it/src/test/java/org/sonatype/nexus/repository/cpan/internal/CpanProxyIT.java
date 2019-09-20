@@ -17,10 +17,10 @@ import org.sonatype.goodies.httpfixture.server.fluent.Server;
 import org.sonatype.nexus.pax.exam.NexusPaxExamSupport;
 import org.sonatype.nexus.repository.Repository;
 import org.sonatype.nexus.repository.http.HttpStatus;
-import org.sonatype.nexus.testsuite.testsupport.FormatClientSupport;
 import org.sonatype.nexus.testsuite.testsupport.NexusITSupport;
 
-import org.hamcrest.MatcherAssert;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -33,15 +33,19 @@ import static org.sonatype.nexus.testsuite.testsupport.FormatClientSupport.statu
 public class CpanProxyIT
     extends CpanITSupport
 {
-  public static final String PACKAGE_NAME = "Test-Dependencies-0.24.tar.gz";
+  private static final String PACKAGE_NAME = "Test-Dependencies-0.24.tar.gz";
 
-  public static final String BASE_PATH = "authors/id/E/EH/EHUELS/";
+  private static final String BASE_PATH = "authors/id/E/EH/EHUELS/";
+
+  private static final String BAD_PATH = "/this/path/is/not/valid";
 
   private static final String TEST_PATH = BASE_PATH + PACKAGE_NAME;
 
   private CpanClient proxyClient;
 
   private Repository proxyRepo;
+
+  private Server server;
 
   @Configuration
   public static Option[] configureNexus() {
@@ -51,34 +55,30 @@ public class CpanProxyIT
     );
   }
 
-  @Test
-  public void unresponsiveRemoteProduces404() throws Exception {
-    Server server = Server.withPort(0).serve("/*")
+  @Before
+  public void setup() throws Exception {
+    server = Server.withPort(0).serve(BAD_PATH)
         .withBehaviours(error(HttpStatus.NOT_FOUND))
+        .serve("/" + TEST_PATH)
+        .withBehaviours(Behaviours.file(testData.resolveFile(PACKAGE_NAME)))
         .start();
-    try {
-      proxyRepo = repos.createCpanProxy("cpan-test-proxy-notfound", server.getUrl().toExternalForm());
-      proxyClient = cpanClient(proxyRepo);
-      MatcherAssert.assertThat(FormatClientSupport.status(proxyClient.get(TEST_PATH)), is(HttpStatus.NOT_FOUND));
-    }
-    finally {
-      server.stop();
-    }
+
+    proxyRepo = repos.createCpanProxy("cpan-test-proxy", server.getUrl().toExternalForm());
+    proxyClient = cpanClient(proxyRepo);
   }
 
   @Test
-  public void retrieveTarGzFromProxyWhenRemoteOffline() throws Exception {
-    Server server = Server.withPort(0).serve("/*")
-        .withBehaviours(Behaviours.file(testData.resolveFile("Test-Dependencies-0.24.tar.gz")))
-        .start();
-    try {
-      proxyRepo = repos.createCpanProxy("cpan-test-proxy-online", server.getUrl().toExternalForm());
-      proxyClient = cpanClient(proxyRepo);
-      proxyClient.get(TEST_PATH);
-    }
-    finally {
-      server.stop();
-    }
+  public void unresponsiveRemoteProduces404() throws Exception {
+    assertThat(status(proxyClient.get(BAD_PATH)), is(HttpStatus.NOT_FOUND));
+  }
+
+  @Test
+  public void retrieveTarGzFromProxyWhenRemoteOnline() throws Exception {
     assertThat(status(proxyClient.get(TEST_PATH)), is(200));
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    server.stop();
   }
 }
