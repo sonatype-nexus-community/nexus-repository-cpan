@@ -83,6 +83,7 @@ public class CpanProxyIT
   @Test
   public void retrieveTarGzFromProxyWhenRemoteOnline() throws Exception {
     assertThat(status(proxyClient.get(VALID_PACKAGE_URL)), is(HttpStatus.OK));
+
     final Asset asset = findAsset(proxyRepo, VALID_PACKAGE_URL);
     assertThat(asset.name(), is(equalTo(VALID_PACKAGE_URL)));
     assertThat(asset.contentType(), is(equalTo("application/x-gzip")));
