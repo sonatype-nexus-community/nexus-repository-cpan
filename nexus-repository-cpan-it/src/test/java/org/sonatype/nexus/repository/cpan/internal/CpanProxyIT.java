@@ -17,6 +17,9 @@ import org.sonatype.goodies.httpfixture.server.fluent.Server;
 import org.sonatype.nexus.pax.exam.NexusPaxExamSupport;
 import org.sonatype.nexus.repository.Repository;
 import org.sonatype.nexus.repository.http.HttpStatus;
+import org.sonatype.nexus.repository.storage.Asset;
+import org.sonatype.nexus.repository.storage.Component;
+import org.sonatype.nexus.repository.view.ContentTypes;
 import org.sonatype.nexus.testsuite.testsupport.NexusITSupport;
 
 import org.junit.After;
@@ -26,15 +29,18 @@ import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.sonatype.nexus.testsuite.testsupport.FormatClientSupport.status;
 
 public class CpanProxyIT
     extends CpanITSupport
 {
-  private static final String PACKAGE_NAME = "Test-Dependencies-0.24.tar.gz";
+  private static final String COMPONENT_NAME = "Test-Dependencies";
 
-  private static final String INVALID_PACKAGE_NAME = "Test-Dependencies-0.24.zip";
+  private static final String PACKAGE_NAME = COMPONENT_NAME + "-0.24.tar.gz";
+
+  private static final String INVALID_PACKAGE_NAME = COMPONENT_NAME + "-0.24.zip";
 
   private static final String BASE_PATH = "authors/id/E/EH/EHUELS/";
 
@@ -77,6 +83,14 @@ public class CpanProxyIT
   @Test
   public void retrieveTarGzFromProxyWhenRemoteOnline() throws Exception {
     assertThat(status(proxyClient.get(VALID_PACKAGE_URL)), is(HttpStatus.OK));
+    final Asset asset = findAsset(proxyRepo, VALID_PACKAGE_URL);
+    assertThat(asset.name(), is(equalTo(VALID_PACKAGE_URL)));
+    assertThat(asset.contentType(), is(equalTo("application/x-gzip")));
+    assertThat(asset.format(), is(equalTo("cpan")));
+
+    final Component component = findComponent(proxyRepo, COMPONENT_NAME);
+    assertThat(component.version(), is(equalTo("0.24")));
+    assertThat(component.group(), is(equalTo(null)));
   }
 
   @Test
