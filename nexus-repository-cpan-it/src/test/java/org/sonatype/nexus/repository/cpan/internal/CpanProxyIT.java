@@ -61,8 +61,7 @@ public class CpanProxyIT
 
   @Before
   public void setup() throws Exception {
-    server = Server.withPort(0).serve(BAD_PATH)
-        .withBehaviours(error(HttpStatus.NOT_FOUND))
+    server = Server.withPort(0)
         .serve("/" + VALID_PACKAGE_URL)
         .withBehaviours(Behaviours.file(testData.resolveFile(PACKAGE_NAME)))
         .start();
