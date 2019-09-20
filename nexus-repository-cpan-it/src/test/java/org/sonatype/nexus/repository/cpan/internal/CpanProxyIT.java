@@ -35,11 +35,15 @@ public class CpanProxyIT
 {
   private static final String PACKAGE_NAME = "Test-Dependencies-0.24.tar.gz";
 
+  private static final String INVALID_PACKAGE_NAME = "Test-Dependencies-0.24.zip";
+
   private static final String BASE_PATH = "authors/id/E/EH/EHUELS/";
 
   private static final String BAD_PATH = "/this/path/is/not/valid";
 
   private static final String VALID_PACKAGE_URL = BASE_PATH + PACKAGE_NAME;
+
+  private static final String INVALID_PACKAGE_URL = BASE_PATH + INVALID_PACKAGE_NAME;
 
   private CpanClient proxyClient;
 
@@ -74,7 +78,12 @@ public class CpanProxyIT
 
   @Test
   public void retrieveTarGzFromProxyWhenRemoteOnline() throws Exception {
-    assertThat(status(proxyClient.get(VALID_PACKAGE_URL)), is(200));
+    assertThat(status(proxyClient.get(VALID_PACKAGE_URL)), is(HttpStatus.OK));
+  }
+
+  @Test
+  public void retrieveZipFromProxyShouldNotWork() throws Exception {
+    assertThat(status(proxyClient.get(INVALID_PACKAGE_URL)), is(HttpStatus.NOT_FOUND));
   }
 
   @After
