@@ -27,14 +27,17 @@ import org.ops4j.pax.exam.Option;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.sonatype.goodies.httpfixture.server.fluent.Behaviours.content;
 import static org.sonatype.goodies.httpfixture.server.fluent.Behaviours.error;
 import static org.sonatype.nexus.testsuite.testsupport.FormatClientSupport.status;
 
 public class CpanProxyIT
     extends CpanITSupport
 {
-  private static final String TEST_PATH = "authors/id/E/EH/EHUELS/Test-Dependencies-0.24.tar.gz";
+  public static final String PACKAGE_NAME = "Test-Dependencies-0.24.tar.gz";
+
+  public static final String BASE_PATH = "authors/id/E/EH/EHUELS/";
+
+  private static final String TEST_PATH = BASE_PATH + PACKAGE_NAME;
 
   private CpanClient proxyClient;
 
