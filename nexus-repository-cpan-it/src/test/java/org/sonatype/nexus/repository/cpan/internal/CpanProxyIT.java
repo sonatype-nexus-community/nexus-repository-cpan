@@ -35,9 +35,17 @@ import static org.sonatype.nexus.testsuite.testsupport.FormatClientSupport.statu
 public class CpanProxyIT
     extends CpanITSupport
 {
+  private static final String FORMAT_NAME = "cpan";
+
+  private static final String MIME_TYPE = "application/x-gzip";
+
   private static final String COMPONENT_NAME = "Test-Dependencies";
 
-  private static final String PACKAGE_NAME = COMPONENT_NAME + "-0.24.tar.gz";
+  private static final String VERSION_NUMBER = "0.24";
+
+  private static final String EXTENSION = ".tar.gz";
+
+  private static final String PACKAGE_NAME = COMPONENT_NAME + "-" + VERSION_NUMBER + EXTENSION;
 
   private static final String INVALID_PACKAGE_NAME = COMPONENT_NAME + "-0.24.zip";
 
@@ -85,11 +93,11 @@ public class CpanProxyIT
 
     final Asset asset = findAsset(proxyRepo, VALID_PACKAGE_URL);
     assertThat(asset.name(), is(equalTo(VALID_PACKAGE_URL)));
-    assertThat(asset.contentType(), is(equalTo("application/x-gzip"))); // TODO: remove string and replace with variable
-    assertThat(asset.format(), is(equalTo("cpan"))); // TODO: remove string and replace with variable
+    assertThat(asset.contentType(), is(equalTo(MIME_TYPE)));
+    assertThat(asset.format(), is(equalTo(FORMAT_NAME)));
 
     final Component component = findComponent(proxyRepo, COMPONENT_NAME);
-    assertThat(component.version(), is(equalTo("0.24"))); // TODO: remove string and replace with variable
+    assertThat(component.version(), is(equalTo(VERSION_NUMBER))); // TODO: remove string and replace with variable
     assertThat(component.group(), is(equalTo(null)));
   }
 
