@@ -11,29 +11,36 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.sonatype.nexus.plugins</groupId>
     <artifactId>nexus-plugins</artifactId>
     <version>3.19.0-SNAPSHOT</version>
   </parent>
+
   <artifactId>cpan-parent</artifactId>
   <version>0.0.1</version>
   <packaging>pom</packaging>
+
   <name>${project.groupId}:${project.artifactId}-parent</name>
   <inceptionYear>2019</inceptionYear>
+
   <modules>
     <module>nexus-repository-cpan</module>
     <module>nexus-repository-cpan-it</module>
   </modules>
+
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
+
   <properties>
     <nxrm-version>3.19.0-SNAPSHOT</nxrm-version>
   </properties>
+
   <repositories>
     <!-- ensure we can find the parent pom when starting from an empty local .m2 repository -->
     <repository>
@@ -41,6 +48,7 @@
       <url>https://repository.sonatype.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
+
   <profiles>
     <profile>
       <id>deploy</id>
