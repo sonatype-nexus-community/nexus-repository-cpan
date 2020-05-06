@@ -2,49 +2,52 @@ version: 2.1
 
 orbs:
   github-maven-deploy: github-maven-deploy/github-maven-deploy@1.0.5
+  circleci-maven-release-orb: sonatype-nexus-community/circleci-maven-release-orb@0.0.15
 
-mvn-build-test-command: &mvn-build-test-command
+build-and-test-commands: &build-and-test-commands
   mvn-build-test-command: mvn clean verify -PbuildKar -Dit
-
-mvn-collect-artifacts-command: &mvn-collect-artifacts-command
   mvn-collect-artifacts-command: |
     mkdir -p ~/project/artifacts/junit/
-    cp ~/project/nexus-repository-cpan/target/surefire-reports/*.xml ~/project/artifacts/junit/
-    cp ~/project/nexus-repository-cpan/target/nexus-repository-* ~/project/artifacts/
-    cp ~/project/nexus-repository-cpan-it/target/failsafe-reports/*.xml ~/project/artifacts/junit/
+    find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/project/artifacts/junit/ \;
+    find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/project/artifacts/junit/ \;
 
-mvn-deploy-command: &mvn-deploy-command
-  mvn-deploy-command: mvn -s .circleci/.maven.xml clean deploy -PbuildKar -DdeployAtEnd=true -DperformRelease=true -DskipTests -Dspotbugs.skip=true
+release-args: &release-args
+  mvn-release-perform-command: mvn --batch-mode release:perform -s .circleci/.maven.xml -PbuildKar
+  ssh-fingerprints: "7a:70:ee:9b:38:d0:43:34:d9:9b:d4:ef:20:24:ab:95"
   context: rso-base
+  filters:
+    branches:
+      only: master
 
 workflows:
-  workflow:
+  build-branch:
     jobs:
       - github-maven-deploy/build-and-test:
-          <<: *mvn-build-test-command
-          <<: *mvn-collect-artifacts-command
+          <<: *build-and-test-commands
+          filters:
+            branches:
+              ignore: master
 
-      - github-maven-deploy/approve-deploy-patch-version:
+  run-release:
+    jobs:
+      - approve-release:
           type: approval
+          filters:
+            branches:
+              only: master
+      - circleci-maven-release-orb/run-maven-release:
+          requires:
+            - approve-release
+          <<: *release-args
+
+  release-from-master:
+    jobs:
+      - github-maven-deploy/build-and-test:
+          <<: *build-and-test-commands
+          filters:
+            branches:
+              only: master
+      - circleci-maven-release-orb/run-maven-release:
           requires:
             - github-maven-deploy/build-and-test
-      - github-maven-deploy/approve-deploy-minor-version:
-          type: approval
-          requires:
-            - github-maven-deploy/build-and-test
-      - github-maven-deploy/approve-deploy-major-version:
-          type: approval
-          requires:
-            - github-maven-deploy/build-and-test
-      - github-maven-deploy/deploy-patch-version:
-          requires:
-            - github-maven-deploy/approve-deploy-patch-version
-          <<: *mvn-deploy-command
-      - github-maven-deploy/deploy-minor-version:
-          requires:
-            - github-maven-deploy/approve-deploy-minor-version
-          <<: *mvn-deploy-command
-      - github-maven-deploy/deploy-major-version:
-          requires:
-            - github-maven-deploy/approve-deploy-major-version
-          <<: *mvn-deploy-command
+          <<: *release-args
