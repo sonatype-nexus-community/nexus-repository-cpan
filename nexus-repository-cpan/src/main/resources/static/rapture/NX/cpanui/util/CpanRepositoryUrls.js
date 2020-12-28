@@ -19,8 +19,10 @@ Ext.define('NX.cpanui.util.CpanRepositoryUrls', {
     'NX.util.Url'
   ]
 }, function(self) {
-	NX.coreui.util.RepositoryUrls.addRepositoryUrlStrategy('cpan', function (assetModel) {
-      var repositoryName = assetModel.get('repositoryName'), assetName = assetModel.get('name');
-      return NX.util.Url.asLink(NX.util.Url.baseUrl + '/repository/' + repositoryName + '/' + assetName, assetName);
-    });
+  NX.coreui.util.RepositoryUrls.addRepositoryUrlStrategy('cpan', function(me, assetModel) {
+    var repositoryName = assetModel.get('repositoryName'), assetName = assetModel.get('name');
+    return NX.util.Url.asLink(
+        NX.util.Url.baseUrl + '/repository/' + encodeURIComponent(repositoryName) + '/' + encodeURI(assetName),
+        assetName);
+  });
 });
