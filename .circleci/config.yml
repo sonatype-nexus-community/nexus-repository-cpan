@@ -8,6 +8,7 @@ build-and-test-commands: &build-and-test-commands
   mvn-build-test-command: |
     mkdir -p ~/project/artifacts/junit/
     touch ~/project/artifacts/junit/dantest.txt
+    set +o pipefail
     mvn clean verify -PbuildKar -Dit 2>&1 | tee ~/project/artifacts/junit/dantest.txt
     find . -type f -regex ".*/target/failsafe-reports/.*output.txt" -exec cp {} ~/project/artifacts/junit/ \;
     find . -type f -regex ".*/target/it-data/1/nexus3/log/.*.log" -exec cp {} ~/project/artifacts/junit/ \;
