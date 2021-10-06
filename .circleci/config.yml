@@ -7,13 +7,14 @@ orbs:
 build-and-test-commands: &build-and-test-commands
   mvn-build-test-command: |
     mkdir -p ~/project/artifacts/junit/
+    touch ~/project/artifacts/junit/dantest.txt
     mvn clean verify -PbuildKar -Dit
     find . -type f -regex ".*/target/failsafe-reports/.*output.txt" -exec cp {} ~/project/artifacts/junit/ \;
     find . -type f -regex ".*/target/it-data/1/nexus3/log/.*.log" -exec cp {} ~/project/artifacts/junit/ \;
 
   mvn-collect-artifacts-command: |
     mkdir -p ~/project/artifacts/junit/
-    touch ~/project/artifacts/junit/dantest.txt
+    touch ~/project/artifacts/junit/dantest2.txt
     cp nexus-repository-cpan-it/target/failsafe-reports/org.sonatype.nexus.repository.cpan.internal.CpanProxyIT-output.txt ~/project/artifacts/junit/
     cp nexus-repository-cpan-it/target/it-data/1/nexus3/log/nexus.log ~/project/artifacts/junit/
     cp -r /home/circleci/project/nexus-repository-cpan-it/target/failsafe-reports/* ~/project/artifacts/junit/
