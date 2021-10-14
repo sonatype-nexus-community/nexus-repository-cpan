@@ -20,7 +20,7 @@ import org.sonatype.nexus.repository.cache.CacheControllerHolder.CacheType;
 /**
  * Asset kinds for CPAN.
  */
-enum AssetKind
+public enum AssetKind
 {
   ARCHIVE(CacheControllerHolder.CONTENT),
   VARIOUS(CacheControllerHolder.METADATA),
