@@ -8,4 +8,14 @@
       <password>${env.SONATYPE_PASSWORD}</password>
     </server>
   </servers>
+
+  <!-- bypass defunct codehaus repo, fixes: Could not find artifact org.apache.geronimo.specs:geronimo-atinject_1.0_spec:jar:1.0 -->
+  <mirrors>
+    <mirror>
+      <id>codehaus-bypass</id>
+      <name>Codehaus bypass mirror</name>
+      <url>https://repo1.maven.org/maven2</url>
+      <mirrorOf>codehaus</mirrorOf>
+    </mirror>
+  </mirrors>
 </settings>
