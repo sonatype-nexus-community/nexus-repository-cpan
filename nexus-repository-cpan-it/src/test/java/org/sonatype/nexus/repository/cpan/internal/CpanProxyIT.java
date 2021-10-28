@@ -17,8 +17,6 @@ import org.sonatype.goodies.httpfixture.server.fluent.Server;
 import org.sonatype.nexus.pax.exam.NexusPaxExamSupport;
 import org.sonatype.nexus.repository.Repository;
 import org.sonatype.nexus.repository.http.HttpStatus;
-import org.sonatype.nexus.repository.storage.Asset;
-import org.sonatype.nexus.repository.storage.Component;
 import org.sonatype.nexus.testsuite.testsupport.NexusITSupport;
 
 import org.junit.After;
@@ -28,15 +26,13 @@ import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 import static org.sonatype.nexus.testsuite.testsupport.FormatClientSupport.status;
 
 public class CpanProxyIT
     extends CpanITSupport
 {
-  private static final String FORMAT_NAME = "cpan";
-
   private static final String MIME_TYPE = "application/x-gzip";
 
   private static final String COMPONENT_NAME = "Test-Dependencies";
@@ -91,14 +87,10 @@ public class CpanProxyIT
   public void retrieveTarGzFromProxyWhenRemoteOnline() throws Exception {
     assertThat(status(proxyClient.get(VALID_PACKAGE_URL)), is(HttpStatus.OK));
 
-    final Asset asset = findAsset(proxyRepo, VALID_PACKAGE_URL);
-    assertThat(asset.name(), is(equalTo(VALID_PACKAGE_URL)));
-    assertThat(asset.contentType(), is(equalTo(MIME_TYPE)));
-    assertThat(asset.format(), is(equalTo(FORMAT_NAME)));
+    assertTrue(componentAssetTestHelper.assetExists(proxyRepo, VALID_PACKAGE_URL));
+    assertThat(componentAssetTestHelper.contentTypeFor(proxyRepo, VALID_PACKAGE_URL), is(MIME_TYPE));
 
-    final Component component = findComponent(proxyRepo, COMPONENT_NAME);
-    assertThat(component.version(), is(equalTo(VERSION_NUMBER))); // TODO: remove string and replace with variable
-    assertThat(component.group(), is(equalTo(null)));
+    assertTrue(componentAssetTestHelper.componentExists(proxyRepo, COMPONENT_NAME, VERSION_NUMBER));
   }
 
   @Test
