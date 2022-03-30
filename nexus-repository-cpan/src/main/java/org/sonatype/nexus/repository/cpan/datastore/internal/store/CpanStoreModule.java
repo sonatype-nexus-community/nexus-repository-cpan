@@ -25,7 +25,8 @@ public class CpanStoreModule
     extends FormatStoreModule<CpanContentRepositoryDAO,
                               CpanComponentDAO,
                               CpanAssetDAO,
-                              CpanAssetBlobDAO>
+                              CpanAssetBlobDAO,
+                              CpanSearchDAO>
 {
   // nothing to add...
 }
