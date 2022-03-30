@@ -25,7 +25,7 @@ import org.sonatype.nexus.repository.Type;
 import org.sonatype.nexus.repository.cache.NegativeCacheFacet;
 import org.sonatype.nexus.repository.cache.NegativeCacheHandler;
 import org.sonatype.nexus.repository.content.maintenance.SingleAssetMaintenanceFacet;
-import org.sonatype.nexus.repository.content.search.SearchFacet;
+import org.sonatype.nexus.repository.content.search.ElasticSearchFacet;
 import org.sonatype.nexus.repository.cpan.datastore.CpanContentFacet;
 import org.sonatype.nexus.repository.cpan.internal.AssetKind;
 import org.sonatype.nexus.repository.cpan.internal.CpanFormat;
@@ -89,7 +89,7 @@ public class CpanProxyRecipe
 
   private final Provider<ConfigurableViewFacet> viewFacet;
 
-  private final Provider<SearchFacet> searchFacet;
+  private final Provider<ElasticSearchFacet> searchFacet;
 
   private final Provider<SingleAssetMaintenanceFacet> componentMaintenanceFacet;
 
@@ -116,7 +116,7 @@ public class CpanProxyRecipe
       final Provider<CpanProxyFacetImpl> proxyFacet,
       final Provider<CpanSecurityFacet> securityFacet,
       final Provider<ConfigurableViewFacet> viewFacet,
-      final Provider<SearchFacet> searchFacet,
+      final Provider<ElasticSearchFacet> searchFacet,
       final Provider<SingleAssetMaintenanceFacet> componentMaintenanceFacet,
       final Provider<HttpClientFacet> httpClientFacet,
       final Provider<NegativeCacheFacet> negativeCacheFacet,
