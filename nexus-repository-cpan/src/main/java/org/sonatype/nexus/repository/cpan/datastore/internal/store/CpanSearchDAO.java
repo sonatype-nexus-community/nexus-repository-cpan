@@ -1,6 +1,6 @@
 /*
  * Sonatype Nexus (TM) Open Source Version
- * Copyright (c) 2018-present Sonatype, Inc.
+ * Copyright (c) 2008-present Sonatype, Inc.
  * All rights reserved. Includes the third-party code listed at http://links.sonatype.com/products/nexus/oss/attributions.
  *
  * This program and the accompanying materials are made available under the terms of the Eclipse Public License Version 1.0,
@@ -12,21 +12,13 @@
  */
 package org.sonatype.nexus.repository.cpan.datastore.internal.store;
 
-import javax.inject.Named;
 
-import org.sonatype.nexus.repository.content.store.FormatStoreModule;
-import org.sonatype.nexus.repository.cpan.internal.CpanFormat;
+import org.sonatype.nexus.repository.content.search.SearchDAO;
 
 /**
- * Configures the content store bindings for a cpan format.
+ * @since 3.next
  */
-@Named(CpanFormat.NAME)
-public class CpanStoreModule
-    extends FormatStoreModule<CpanContentRepositoryDAO,
-                              CpanComponentDAO,
-                              CpanAssetDAO,
-                              CpanAssetBlobDAO,
-                              CpanSearchDAO>
+public interface CpanSearchDAO
+    extends SearchDAO
 {
-  // nothing to add...
 }
