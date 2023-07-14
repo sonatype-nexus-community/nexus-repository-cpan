@@ -26,6 +26,7 @@ import org.sonatype.goodies.common.ComponentSupport;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.yaml.snakeyaml.Yaml;
 
 import static java.util.Collections.emptyMap;
@@ -39,7 +40,8 @@ import static java.util.stream.Collectors.toList;
 public class CpanParser
     extends ComponentSupport
 {
-  private static final String METADATA_FILENAME = "META.yml";
+  private static final String METADATA_OLD_FILENAME = "META.yml";
+  private static final String METADATA_FILENAME = "META.json";
 
   public CpanAttributes parse(final InputStream in) {
     Map metadata = readMetadataFromTar(in);
@@ -69,7 +71,10 @@ public class CpanParser
           TarArchiveEntry entry;
           while ((entry = tar.getNextTarEntry()) != null) {
             if (entry.getName().contains(METADATA_FILENAME)) {
-              return readFile(tar);
+              return readJSONFile(tar);
+            }
+            else if (entry.getName().contains(METADATA_OLD_FILENAME)) {
+              return readYAMLFile(tar);
             }
           }
         }
@@ -81,7 +86,7 @@ public class CpanParser
     return emptyMap();
   }
 
-  private Map readFile(final TarArchiveInputStream tar) throws IOException {
+  private Map readYAMLFile(final TarArchiveInputStream tar) throws IOException {
     byte[] buffer = new byte[1024];
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     int length;
@@ -90,6 +95,17 @@ public class CpanParser
     }
     Yaml yaml = new Yaml();
     return (Map) yaml.load(new String(byteArrayOutputStream.toByteArray()));
+  }
+
+  private Map readJSONFile(final TarArchiveInputStream tar) throws IOException {
+    byte[] buffer = new byte[1024];
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    int length;
+    while ((length = tar.read(buffer)) != -1) {
+      byteArrayOutputStream.write(buffer, 0, length);
+    }
+    ObjectMapper mapper = new ObjectMapper();
+    return (Map) mapper.readValue(new String(byteArrayOutputStream.toByteArray()), Map.class);
   }
 
   private static String read(final String key, final Map metadata) {
